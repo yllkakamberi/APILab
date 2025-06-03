@@ -113,5 +113,18 @@ namespace ClinicAPI.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDoctor(int id)
+        {
+            var doctor = await _context.Doctors.FindAsync(id);
+            if (doctor == null)
+                return NotFound();
+
+            _context.Doctors.Remove(doctor);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
