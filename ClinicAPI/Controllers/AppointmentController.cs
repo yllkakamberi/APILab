@@ -1,10 +1,12 @@
 ﻿using ClinicAPI.Data;
 using ClinicAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
@@ -26,41 +28,61 @@ namespace ClinicAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Appointment>> CreateAppointment(Appointment appointment)
+        public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] AppointmentDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.PatientName))
+                return BadRequest("Patient name is required.");
+            if (dto.DoctorId <= 0)
+                return BadRequest("Valid doctor ID is required.");
+            if (dto.AppointmentDate < DateTime.Now)
+                return BadRequest("Appointment date must be in the future.");
+
+            var appointment = new Appointment
+            {
+                PatientName = dto.PatientName,
+                AppointmentDate = dto.AppointmentDate,
+                DoctorId = dto.DoctorId,
+                Notes = dto.Notes
+            };
+
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetAllAppointments), new { id = appointment.Id }, appointment);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAppointment(int id, [FromBody] Appointment updated)
+        {
+            if (id != updated.Id)
+                return BadRequest("ID mismatch");
+
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(updated.PatientName))
+                return BadRequest("Patient name is required.");
+
+            appointment.PatientName = updated.PatientName;
+            appointment.AppointmentDate = updated.AppointmentDate;
+            appointment.DoctorId = updated.DoctorId;
+            appointment.Notes = updated.Notes;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var appointment = await _context.Appointments.FindAsync(id);
-            if (appointment == null) return NotFound();
+            if (appointment == null)
+                return NotFound();
 
             _context.Appointments.Remove(appointment);
             await _context.SaveChangesAsync();
             return NoContent();
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAppointment(int id, Appointment appointment)
-        {
-            if (id != appointment.Id)
-                return BadRequest();
-
-            var existing = await _context.Appointments.FindAsync(id);
-            if (existing == null)
-                return NotFound();
-
-            existing.PatientName = appointment.PatientName;
-            existing.AppointmentDate = appointment.AppointmentDate;
-            existing.DoctorId = appointment.DoctorId;
-            existing.Notes = appointment.Notes;
-
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
     }
 }

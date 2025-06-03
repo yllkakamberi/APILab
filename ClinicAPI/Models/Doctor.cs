@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ClinicAPI.Models
 {
@@ -13,11 +15,13 @@ namespace ClinicAPI.Models
         [Required]
         public string Email { get; set; }
 
+        [ForeignKey("Department")]
         public int DepartmentId { get; set; }
 
-        [ForeignKey("DepartmentId")]
+        [JsonIgnore]
         public Department Department { get; set; }
 
+        [JsonIgnore]
         public ICollection<Appointment> Appointments { get; set; }
     }
 }

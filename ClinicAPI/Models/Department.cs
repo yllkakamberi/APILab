@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Numerics;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClinicAPI.Models
 {
@@ -10,6 +10,6 @@ namespace ClinicAPI.Models
         [Required]
         public string Name { get; set; }
 
-        public ICollection<Doctor> Doctors { get; set; }
+        public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
     }
 }
