@@ -145,8 +145,7 @@
               "RelativeToolTip": "Models\\Department.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAABCAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:10:36.683Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:10:36.683Z"
             },
             {
               "$type": "Document",
@@ -158,8 +157,7 @@
               "RelativeToolTip": "Models\\Doctor.cs",
               "ViewState": "AQIAAAUAAAAAAAAAAAAAwBQAAAAUAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:10:54.592Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:10:54.592Z"
             },
             {
               "$type": "Document",
@@ -171,8 +169,7 @@
               "RelativeToolTip": "Controllers\\AuthController.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAF4AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:08:15.641Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:08:15.641Z"
             },
             {
               "$type": "Document",
@@ -184,8 +181,7 @@
               "RelativeToolTip": "Controllers\\DepartmentController.cs",
               "ViewState": "AQIAAC0AAAAAAAAAAAAswEkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:12:20.945Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:12:20.945Z"
             },
             {
               "$type": "Document",
@@ -210,8 +206,7 @@
               "RelativeToolTip": "Models\\DepartmentDTO.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:44:50.433Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:44:50.433Z"
             },
             {
               "$type": "Document",
@@ -223,8 +218,7 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AQIAAE4AAAAAAAAAAAAgwGoAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:13:32.835Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:13:32.835Z"
             },
             {
               "$type": "Document",
@@ -236,8 +230,7 @@
               "RelativeToolTip": "Data\\AppDbContext.cs",
               "ViewState": "AQIAAAUAAAAAAAAAAAAAwBsAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:11:34.096Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:11:34.096Z"
             },
             {
               "$type": "Document",
@@ -249,8 +242,7 @@
               "RelativeToolTip": "Controllers\\AppointmentController.cs",
               "ViewState": "AQIAADwAAAAAAAAAAAAswFgAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:13:20.977Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:13:20.977Z"
             },
             {
               "$type": "Document",
@@ -262,8 +254,7 @@
               "RelativeToolTip": "Models\\AppointmentDTO.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T18:20:08.229Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T18:20:08.229Z"
             },
             {
               "$type": "Document",
@@ -275,8 +266,7 @@
               "RelativeToolTip": "Models\\Appointment.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T16:11:13.515Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T16:11:13.515Z"
             },
             {
               "$type": "Document",
@@ -288,8 +278,7 @@
               "RelativeToolTip": "Models\\DoctorDTO.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-30T17:47:24.074Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-30T17:47:24.074Z"
             },
             {
               "$type": "Document",
