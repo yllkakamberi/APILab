@@ -23,6 +23,7 @@ namespace ClinicAPI.Controllers
             _context = context;
             _config = config;
         }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterDto request)
@@ -36,7 +37,8 @@ namespace ClinicAPI.Controllers
             {
                 Email = request.Email,
                 PasswordHash = hash,
-                PasswordSalt = salt
+                PasswordSalt = salt,
+                Role = "User" // ✅ Default role
             };
 
             _context.Users.Add(user);
@@ -44,13 +46,14 @@ namespace ClinicAPI.Controllers
 
             return Ok("User registered");
         }
-        [AllowAnonymous]
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (user == null) return BadRequest("User not found");
+            if (user == null)
+                return BadRequest("User not found");
 
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
                 return BadRequest("Wrong password");
@@ -63,11 +66,14 @@ namespace ClinicAPI.Controllers
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Email)
+                new Claim(ClaimTypes.Name, user.Email),     // ✅ Used by .NET identity
+                new Claim(ClaimTypes.Role, user.Role),      // ✅ Backend role
+                new Claim("role", user.Role)                // ✅ Used in frontend
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.UtcNow.AddDays(1),

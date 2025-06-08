@@ -21,25 +21,38 @@ namespace ClinicAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Appointment>>> GetAllAppointments()
         {
-            return await _context.Appointments
+            var userEmail = User.Identity?.Name;
+            var isAdmin = User.IsInRole("Admin");
+
+            var appointments = await _context.Appointments
                 .Include(a => a.Doctor)
                 .ThenInclude(d => d.Department)
                 .ToListAsync();
+
+            if (isAdmin)
+                return appointments;
+
+            // ✅ Filter by logged-in user's email
+            return appointments.Where(a => a.PatientName == userEmail).ToList();
         }
 
         [HttpPost]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] AppointmentDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.PatientName))
-                return BadRequest("Patient name is required.");
+            var userEmail = User.Identity?.Name;
+
+            if (string.IsNullOrWhiteSpace(userEmail))
+                return Unauthorized("User identity is missing.");
+
             if (dto.DoctorId <= 0)
                 return BadRequest("Valid doctor ID is required.");
+
             if (dto.AppointmentDate < DateTime.Now)
                 return BadRequest("Appointment date must be in the future.");
 
             var appointment = new Appointment
             {
-                PatientName = dto.PatientName,
+                PatientName = userEmail, // ✅ Automatically set to user's email
                 AppointmentDate = dto.AppointmentDate,
                 DoctorId = dto.DoctorId,
                 Notes = dto.Notes
@@ -60,9 +73,6 @@ namespace ClinicAPI.Controllers
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
                 return NotFound();
-
-            if (string.IsNullOrWhiteSpace(updated.PatientName))
-                return BadRequest("Patient name is required.");
 
             appointment.PatientName = updated.PatientName;
             appointment.AppointmentDate = updated.AppointmentDate;

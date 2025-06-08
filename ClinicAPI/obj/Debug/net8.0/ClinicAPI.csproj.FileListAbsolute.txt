@@ -339,3 +339,5 @@ C:\lab1\APILab\ClinicAPI\obj\Debug\net8.0\ClinicAPI.pdb
 C:\lab1\APILab\ClinicAPI\obj\Debug\net8.0\ClinicAPI.genruntimeconfig.cache
 C:\lab1\APILab\ClinicAPI\obj\Debug\net8.0\ref\ClinicAPI.dll
 C:\lab1\APILab\ClinicAPI\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\lab1\APILab\ClinicAPI\bin\Debug\net8.0\package-lock.json
+C:\lab1\APILab\ClinicAPI\bin\Debug\net8.0\package.json
