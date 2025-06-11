@@ -7,6 +7,9 @@ namespace ClinicAPI.Models
         public int Id { get; set; }
 
         [Required]
+        public string Username { get; set; }
+
+        [Required]
         public string Email { get; set; }
 
         [Required]
@@ -16,6 +19,6 @@ namespace ClinicAPI.Models
         public byte[] PasswordSalt { get; set; }
 
         [Required]
-        public string Role { get; set; } = "User"; // ✅ Default role is "User"
+        public string Role { get; set; } = "User";  // ✅ Single Role definition
     }
 }

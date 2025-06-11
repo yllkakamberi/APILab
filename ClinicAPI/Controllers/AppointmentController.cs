@@ -19,21 +19,29 @@ namespace ClinicAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Appointment>>> GetAllAppointments()
+        public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllAppointments()
         {
             var userEmail = User.Identity?.Name;
             var isAdmin = User.IsInRole("Admin");
 
             var appointments = await _context.Appointments
                 .Include(a => a.Doctor)
-                .ThenInclude(d => d.Department)
                 .ToListAsync();
 
-            if (isAdmin)
-                return appointments;
+            var result = appointments
+                .Where(a => isAdmin || a.PatientName == userEmail)
+                .Select(a => new AppointmentDto
+                {
+                    Id = a.Id, // ✅ REQUIRED for frontend to update/delete
+                    PatientName = a.PatientName,
+                    AppointmentDate = a.AppointmentDate,
+                    DoctorId = a.DoctorId,
+                    Notes = a.Notes,
+                    DoctorName = a.Doctor?.FullName
+                })
+                .ToList();
 
-            // ✅ Filter by logged-in user's email
-            return appointments.Where(a => a.PatientName == userEmail).ToList();
+            return Ok(result);
         }
 
         [HttpPost]
@@ -52,7 +60,7 @@ namespace ClinicAPI.Controllers
 
             var appointment = new Appointment
             {
-                PatientName = userEmail, // ✅ Automatically set to user's email
+                PatientName = userEmail,
                 AppointmentDate = dto.AppointmentDate,
                 DoctorId = dto.DoctorId,
                 Notes = dto.Notes

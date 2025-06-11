@@ -35,10 +35,11 @@ namespace ClinicAPI.Controllers
 
             var user = new User
             {
+                Username = request.Username, // ✅ Save username
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
-                Role = "User" // ✅ Default role
+                Role = request.Role ?? "User"
             };
 
             _context.Users.Add(user);
@@ -66,9 +67,10 @@ namespace ClinicAPI.Controllers
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Email),     // ✅ Used by .NET identity
-                new Claim(ClaimTypes.Role, user.Role),      // ✅ Backend role
-                new Claim("role", user.Role)                // ✅ Used in frontend
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim("username", user.Username),        // ✅ Include username in token (optional)
+                new Claim(ClaimTypes.Role, user.Role),
+                new Claim("role", user.Role)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
