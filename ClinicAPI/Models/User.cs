@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// Models/User.cs
+using System.ComponentModel.DataAnnotations;
 
 namespace ClinicAPI.Models
 {
@@ -19,6 +20,11 @@ namespace ClinicAPI.Models
         public byte[] PasswordSalt { get; set; }
 
         [Required]
-        public string Role { get; set; } = "User";  // ✅ Single Role definition
+        public string Role { get; set; } = "User";
+
+        // 🔄 Refresh token support
+        public string? RefreshToken { get; set; }
+        public DateTime TokenCreated { get; set; }
+        public DateTime TokenExpires { get; set; }
     }
 }

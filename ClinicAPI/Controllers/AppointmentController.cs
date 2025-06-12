@@ -18,45 +18,51 @@ namespace ClinicAPI.Controllers
             _context = context;
         }
 
+        // ✅ Admin sees all, user sees only their own
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllAppointments()
         {
-            var userEmail = User.Identity?.Name;
+            var userEmail = User.Identity?.Name; // populated from ClaimTypes.Name
             var isAdmin = User.IsInRole("Admin");
 
-            var appointments = await _context.Appointments
+            var query = _context.Appointments
                 .Include(a => a.Doctor)
-                .ToListAsync();
+                .AsQueryable();
 
-            var result = appointments
-                .Where(a => isAdmin || a.PatientName == userEmail)
+            if (!isAdmin && !string.IsNullOrEmpty(userEmail))
+            {
+                query = query.Where(a => a.PatientName == userEmail);
+            }
+
+            var result = await query
                 .Select(a => new AppointmentDto
                 {
-                    Id = a.Id, // ✅ REQUIRED for frontend to update/delete
+                    Id = a.Id,
                     PatientName = a.PatientName,
                     AppointmentDate = a.AppointmentDate,
                     DoctorId = a.DoctorId,
                     Notes = a.Notes,
-                    DoctorName = a.Doctor?.FullName
+                    DoctorName = a.Doctor.FullName
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(result);
         }
 
+        // ✅ Only logged-in users can create appointments
         [HttpPost]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] AppointmentDto dto)
         {
             var userEmail = User.Identity?.Name;
 
             if (string.IsNullOrWhiteSpace(userEmail))
-                return Unauthorized("User identity is missing.");
+                return Unauthorized("Missing user identity.");
 
             if (dto.DoctorId <= 0)
                 return BadRequest("Valid doctor ID is required.");
 
-            if (dto.AppointmentDate < DateTime.Now)
-                return BadRequest("Appointment date must be in the future.");
+            if (dto.AppointmentDate <= DateTime.Now)
+                return BadRequest("Appointment must be in the future.");
 
             var appointment = new Appointment
             {
@@ -72,6 +78,7 @@ namespace ClinicAPI.Controllers
             return CreatedAtAction(nameof(GetAllAppointments), new { id = appointment.Id }, appointment);
         }
 
+        // ✅ Admin can update
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAppointment(int id, [FromBody] Appointment updated)
         {
@@ -82,7 +89,6 @@ namespace ClinicAPI.Controllers
             if (appointment == null)
                 return NotFound();
 
-            appointment.PatientName = updated.PatientName;
             appointment.AppointmentDate = updated.AppointmentDate;
             appointment.DoctorId = updated.DoctorId;
             appointment.Notes = updated.Notes;
@@ -91,6 +97,7 @@ namespace ClinicAPI.Controllers
             return NoContent();
         }
 
+        // ✅ Admin can delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {

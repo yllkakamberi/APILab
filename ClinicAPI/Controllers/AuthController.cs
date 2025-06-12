@@ -35,7 +35,7 @@ namespace ClinicAPI.Controllers
 
             var user = new User
             {
-                Username = request.Username, // ✅ Save username
+                Username = request.Username,
                 Email = request.Email,
                 PasswordHash = hash,
                 PasswordSalt = salt,
@@ -60,15 +60,63 @@ namespace ClinicAPI.Controllers
                 return BadRequest("Wrong password");
 
             string token = CreateToken(user);
-            return Ok(new { token });
+            var refreshToken = GenerateRefreshToken();
+            SetRefreshToken(user, refreshToken);
+
+            return Ok(new { token, refreshToken = refreshToken.Token });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+            if (refreshToken == null)
+                return Unauthorized("No refresh token");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+            if (user == null || user.TokenExpires < DateTime.UtcNow)
+                return Unauthorized("Invalid refresh token");
+
+            var token = CreateToken(user);
+            var newRefresh = GenerateRefreshToken();
+            SetRefreshToken(user, newRefresh);
+
+            return Ok(new { token, refreshToken = newRefresh.Token });
+        }
+
+        private void SetRefreshToken(User user, RefreshToken refreshToken)
+        {
+            user.RefreshToken = refreshToken.Token;
+            user.TokenCreated = refreshToken.Created;
+            user.TokenExpires = refreshToken.Expires;
+
+            _context.SaveChanges();
+
+            Response.Cookies.Append("refreshToken", refreshToken.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = refreshToken.Expires
+            });
+        }
+
+        private RefreshToken GenerateRefreshToken()
+        {
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+                Created = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddDays(7)
+            };
         }
 
         private string CreateToken(User user)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.Email),
-                new Claim("username", user.Username),        // ✅ Include username in token (optional)
+                new Claim(ClaimTypes.Name, user.Email), // required for backend identity
+                new Claim("email", user.Email),         // ✅ added for frontend to decode
+                new Claim("username", user.Username),
                 new Claim(ClaimTypes.Role, user.Role),
                 new Claim("role", user.Role)
             };
@@ -78,7 +126,7 @@ namespace ClinicAPI.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 
@@ -98,5 +146,12 @@ namespace ClinicAPI.Controllers
             var computed = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
             return computed.SequenceEqual(hash);
         }
+    }
+
+    public class RefreshToken
+    {
+        public string Token { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Expires { get; set; }
     }
 }
