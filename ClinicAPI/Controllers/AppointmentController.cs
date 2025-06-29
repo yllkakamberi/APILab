@@ -18,15 +18,15 @@ namespace ClinicAPI.Controllers
             _context = context;
         }
 
-        // ✅ Admin sees all, user sees only their own
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppointmentDto>>> GetAllAppointments()
         {
-            var userEmail = User.Identity?.Name; // populated from ClaimTypes.Name
+            var userEmail = User.Identity?.Name;
             var isAdmin = User.IsInRole("Admin");
 
             var query = _context.Appointments
                 .Include(a => a.Doctor)
+                .Include(a => a.Service)
                 .AsQueryable();
 
             if (!isAdmin && !string.IsNullOrEmpty(userEmail))
@@ -41,25 +41,25 @@ namespace ClinicAPI.Controllers
                     PatientName = a.PatientName,
                     AppointmentDate = a.AppointmentDate,
                     DoctorId = a.DoctorId,
-                    Notes = a.Notes,
-                    DoctorName = a.Doctor.FullName
+                    DoctorName = a.Doctor.FullName,
+                    ServiceId = a.ServiceId,
+                    ServiceName = a.Service.Name,
+                    Notes = a.Notes
                 })
                 .ToListAsync();
 
             return Ok(result);
         }
 
-        // ✅ Only logged-in users can create appointments
         [HttpPost]
         public async Task<ActionResult<Appointment>> CreateAppointment([FromBody] AppointmentDto dto)
         {
             var userEmail = User.Identity?.Name;
-
             if (string.IsNullOrWhiteSpace(userEmail))
                 return Unauthorized("Missing user identity.");
 
-            if (dto.DoctorId <= 0)
-                return BadRequest("Valid doctor ID is required.");
+            if (dto.DoctorId <= 0 || dto.ServiceId <= 0)
+                return BadRequest("Valid doctor and service IDs are required.");
 
             if (dto.AppointmentDate <= DateTime.Now)
                 return BadRequest("Appointment must be in the future.");
@@ -68,9 +68,11 @@ namespace ClinicAPI.Controllers
             {
                 PatientName = userEmail,
                 AppointmentDate = dto.AppointmentDate,
-                DoctorId = dto.DoctorId,
+                DoctorId = dto.DoctorId,             // ✅ already int
+                ServiceId = dto.ServiceId.Value,     // ✅ cast nullable to non-nullable
                 Notes = dto.Notes
             };
+
 
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -78,7 +80,6 @@ namespace ClinicAPI.Controllers
             return CreatedAtAction(nameof(GetAllAppointments), new { id = appointment.Id }, appointment);
         }
 
-        // ✅ Admin can update
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAppointment(int id, [FromBody] Appointment updated)
         {
@@ -91,13 +92,13 @@ namespace ClinicAPI.Controllers
 
             appointment.AppointmentDate = updated.AppointmentDate;
             appointment.DoctorId = updated.DoctorId;
+            appointment.ServiceId = updated.ServiceId;
             appointment.Notes = updated.Notes;
 
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
-        // ✅ Admin can delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {

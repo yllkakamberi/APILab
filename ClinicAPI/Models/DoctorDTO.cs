@@ -1,8 +1,18 @@
-﻿public class DoctorDto
+﻿using System.ComponentModel.DataAnnotations;
+
+public class DoctorDto
 {
     public int Id { get; set; }
+
+    [Required]
     public string FullName { get; set; }
+
+    [Required]
     public string Email { get; set; }
+
+    [Required]
     public int DepartmentId { get; set; }
-    public string DepartmentName { get; set; } // 👈 Add this
+
+    // ✅ This is used only for GET (display), NOT required in POST
+    public string? DepartmentName { get; set; }
 }

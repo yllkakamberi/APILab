@@ -11,5 +11,7 @@ namespace ClinicAPI.Models
         public string Name { get; set; }
 
         public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
+
+        public ICollection<Service> Services { get; set; } = new List<Service>(); // ✅ Added
     }
 }

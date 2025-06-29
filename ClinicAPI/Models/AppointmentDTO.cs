@@ -4,16 +4,18 @@ namespace ClinicAPI.Models
 {
     public class AppointmentDto
     {
-        public int Id { get; set; } // ✅ Required for editing/updating
+        public int Id { get; set; }
 
-        // ✅ Make optional so frontend doesn't have to send it
         public string? PatientName { get; set; }
 
         public DateTime AppointmentDate { get; set; }
-        public int DoctorId { get; set; }
-        public string? Notes { get; set; }
 
-        // ✅ Optional: used for displaying doctor's full name
+        public int DoctorId { get; set; }
         public string? DoctorName { get; set; }
+
+        public int? ServiceId { get; set; }
+        public string? ServiceName { get; set; }
+
+        public string? Notes { get; set; }
     }
 }
